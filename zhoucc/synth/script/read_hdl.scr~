@@ -1,0 +1,26 @@
+# File: read_hdl.scr
+
+# define design files:
+set VERILOG_FILES { \
+  /workspace/home/zhoucc/S2CNN/Project/TS3D/source/PEB/Balance/ACT.v \
+  /workspace/home/zhoucc/S2CNN/Project/TS3D/source/PEB/Balance/REGFLGWEI.v \
+  /workspace/home/zhoucc/S2CNN/Project/TS3D/source/PEB/Balance/ARB.v \
+  /workspace/home/zhoucc/S2CNN/Project/TS3D/source/PEB/Balance/MAC.v \
+  /workspace/home/zhoucc/S2CNN/Project/TS3D/source/PEB/Balance/MACAW.v \
+  /workspace/home/zhoucc/S2CNN/Project/TS3D/source/PEB/Balance/PEB.v \
+  /workspace/home/zhoucc/S2CNN/Project/TS3D/source/PEB/Balance/PSUM.v \
+  /workspace/home/zhoucc/S2CNN/Project/TS3D/source/PEB/Balance/PSUM_MUX.v \
+  /workspace/home/zhoucc/S2CNN/Project/TS3D/source/PEB/Balance/RAM_ACT_wrap.v \
+  /workspace/home/zhoucc/S2CNN/Project/TS3D/source/PEB/Balance/RAM_WEI_wrap.v \
+  /workspace/home/zhoucc/S2CNN/Project/TS3D/source/PEB/Balance/SRAM_ACT.v \
+  /workspace/home/zhoucc/S2CNN/Project/TS3D/source/PEB/Balance/SRAM_WEI.v \
+  /workspace/home/zhoucc/S2CNN/Project/TS3D/source/PEB/Balance/FLGOFFSET.v \
+  /workspace/home/zhoucc/S2CNN/Project/TS3D/source/primitives/DELAY/Delay.v \
+  /workspace/home/zhoucc/S2CNN/Project/TS3D/source/primitives/FIFO/fifo.v \
+  /workspace/home/zhoucc/S2CNN/Project/TS3D/source/PEB/Balance/fifo_mr_sram_act.v \
+  /workspace/home/zhoucc/S2CNN/Project/TS3D/source/PEB/Balance/fifo_mr_sram_wei.v \
+  /workspace/home/zhoucc/S2CNN/Project/TS3D/source/PEB/Balance/fifo_pwmr.v \
+  /workspace/home/zhoucc/S2CNN/Project/TS3D/source/PEB/Balance/fifo_mr.v \
+
+}
+

@@ -1,0 +1,2 @@
+gcc -c main.c -o main.o -std=c99
+gcc main.o -o pool_out
