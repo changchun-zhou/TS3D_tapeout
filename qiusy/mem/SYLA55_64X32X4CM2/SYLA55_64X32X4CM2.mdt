@@ -1,0 +1,54 @@
+# ///////////////////////////////////////////////////////////////////////////////////
+# // ________________________________________________________________________________________________
+# // 
+# // 
+# //             Synchronous RVT Periphery One-Port Register File Compiler
+# // 
+# //                 UMC 55nm Low K Low Power Logic Process
+# // 
+# // ________________________________________________________________________________________________
+# // 
+# //               
+# //         Copyright (C) 2020 Faraday Technology Corporation. All Rights Reserved.       
+# //                
+# //         This source code is an unpublished work belongs to Faraday Technology Corporation       
+# //         It is considered a trade secret and is not to be divulged or       
+# //         used by parties who have not received written authorization from       
+# //         Faraday Technology Corporation       
+# //                
+# //         Faraday's home page can be found at: http://www.faraday-tech.com/       
+# //                
+# // ________________________________________________________________________________________________
+# // 
+# //        IP Name            :  FSF0L_A_SY                                               
+# //        IP Version         :  1.5.0                                                    
+# //        IP Release Status  :  Active                                                   
+# //        Word               :  64                                                       
+# //        Bit                :  32                                                       
+# //        Byte               :  4                                                        
+# //        Mux                :  2                                                        
+# //        Output Loading     :  0.01                                                     
+# //        Clock Input Slew   :  0.008                                                    
+# //        Data Input Slew    :  0.008                                                    
+# //        Ring Type          :  Ring Shape Model                                         
+# //        Ring Layer         :  2233                                                     
+# //        Ring Width         :  2                                                        
+# //        Bus Format         :  1                                                        
+# //        Memaker Path       :  /workspace/technology/umc/55nm_201908/memlib_GDS/memlib  
+# //        GUI Version        :  m20130120                                                
+# //        Date               :  2020/07/14 14:56:29                                      
+# // ________________________________________________________________________________________________
+# // 
+# ///////////////////////////////////////////////////////////////////////////////////
+tfgDefineMem -module "SYLA55_64X32X4CM2" -array_name "Memory_byte0"
+tfgDefineMem -module "SYLA55_64X32X4CM2" -array_name "Memory_byte1"
+tfgDefineMem -module "SYLA55_64X32X4CM2" -array_name "Memory_byte2"
+tfgDefineMem -module "SYLA55_64X32X4CM2" -array_name "Memory_byte3"
+tfgDefineMemWrite -module "SYLA55_64X32X4CM2" -array_name "Memory_byte0" -clk "@(posedge CK)" -cond "~CSB && ~WEB[0]" -addr "A" -data "DI[31:0]"
+tfgDefineMemWrite -module "SYLA55_64X32X4CM2" -array_name "Memory_byte1" -clk "@(posedge CK)" -cond "~CSB && ~WEB[1]" -addr "A" -data "DI[63:32]"
+tfgDefineMemWrite -module "SYLA55_64X32X4CM2" -array_name "Memory_byte2" -clk "@(posedge CK)" -cond "~CSB && ~WEB[2]" -addr "A" -data "DI[95:64]"
+tfgDefineMemWrite -module "SYLA55_64X32X4CM2" -array_name "Memory_byte3" -clk "@(posedge CK)" -cond "~CSB && ~WEB[3]" -addr "A" -data "DI[127:96]"
+tfgDefineMemRead -module "SYLA55_64X32X4CM2" -array_name "Memory_byte0" -clk "@(posedge CK)" -cond "~CSB && WEB[0]" -addr "A" -out "DO[31:0]"
+tfgDefineMemRead -module "SYLA55_64X32X4CM2" -array_name "Memory_byte1" -clk "@(posedge CK)" -cond "~CSB && WEB[1]" -addr "A" -out "DO[63:32]"
+tfgDefineMemRead -module "SYLA55_64X32X4CM2" -array_name "Memory_byte2" -clk "@(posedge CK)" -cond "~CSB && WEB[2]" -addr "A" -out "DO[95:64]"
+tfgDefineMemRead -module "SYLA55_64X32X4CM2" -array_name "Memory_byte3" -clk "@(posedge CK)" -cond "~CSB && WEB[3]" -addr "A" -out "DO[127:96]"

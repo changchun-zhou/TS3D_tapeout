@@ -1,0 +1,190 @@
+///////////////////////////////////////////////////////////////////////////////////
+// ________________________________________________________________________________________________
+// 
+// 
+//             Synchronous RVT Periphery One-Port Register File Compiler
+// 
+//                 UMC 55nm Low K Low Power Logic Process
+// 
+// ________________________________________________________________________________________________
+// 
+//               
+//         Copyright (C) 2020 Faraday Technology Corporation. All Rights Reserved.       
+//                
+//         This source code is an unpublished work belongs to Faraday Technology Corporation       
+//         It is considered a trade secret and is not to be divulged or       
+//         used by parties who have not received written authorization from       
+//         Faraday Technology Corporation       
+//                
+//         Faraday's home page can be found at: http://www.faraday-tech.com/       
+//                
+// ________________________________________________________________________________________________
+// 
+//        IP Name            :  FSF0L_A_SY                                               
+//        IP Version         :  1.5.0                                                    
+//        IP Release Status  :  Active                                                   
+//        Word               :  256                                                      
+//        Bit                :  8                                                        
+//        Byte               :  1                                                        
+//        Mux                :  4                                                        
+//        Output Loading     :  0.01                                                     
+//        Clock Input Slew   :  0.008                                                    
+//        Data Input Slew    :  0.008                                                    
+//        Ring Type          :  Ring Shape Model                                         
+//        Ring Layer         :  2233                                                     
+//        Ring Width         :  2                                                        
+//        Bus Format         :  1                                                        
+//        Memaker Path       :  /workspace/technology/umc/55nm_201908/memlib_GDS/memlib  
+//        GUI Version        :  m20130120                                                
+//        Date               :  2020/07/14 14:54:06                                      
+// ________________________________________________________________________________________________
+// 
+///////////////////////////////////////////////////////////////////////////////////
+model SYLA55_256X8X1CM4 (
+    A, DI, DO,
+    WEB,
+    DVS, DVSE,
+    CK, CSB) (
+
+    input (CK, CSB) ()
+    input (A) (array = 7 : 0;)
+    input (WEB) ()
+    input (DI) (array = 7 : 0;)
+    input (DVSE) ()
+    input (DVS) (array = 3 : 0;)
+
+    intern (DI_0) (primitive = _buf(DI<0>,DI_0);)   
+    intern (DI_1) (primitive = _buf(DI<1>,DI_1);)   
+    intern (DI_2) (primitive = _buf(DI<2>,DI_2);)   
+    intern (DI_3) (primitive = _buf(DI<3>,DI_3);)   
+    intern (DI_4) (primitive = _buf(DI<4>,DI_4);)   
+    intern (DI_5) (primitive = _buf(DI<5>,DI_5);)   
+    intern (DI_6) (primitive = _buf(DI<6>,DI_6);)   
+    intern (DI_7) (primitive = _buf(DI<7>,DI_7);)   
+
+    intern(CS)(primitive = _inv (CSB, CS);)
+    intern(WE)(primitive = _inv (WEB, WE);)
+    intern(WEN)(primitive = _and (WE, CS, WEN);)   
+
+    intern(REN)(primitive = _and (WEB, CS, REN);)   
+    intern(OE) (primitive = _tie1 (OE);)
+
+
+
+
+   
+    intern (DO_0) (
+      data_size = 1;
+      address_size = 8;
+      min_address = 0;
+      max_address = 255;
+      edge_trigger = rw;
+      read_write_conflict = XX;
+      read_read_conflict = r;
+      primitive = _cram ( , ,
+               _read {1,h,h,h} (OE,CK,REN,A,DO_0),
+               _write{h,h,h} (CK,WEN,A,DI_0));
+    )
+   
+    intern (DO_1) (
+      data_size = 1;
+      address_size = 8;
+      min_address = 0;
+      max_address = 255;
+      edge_trigger = rw;
+      read_write_conflict = XX;
+      read_read_conflict = r;
+      primitive = _cram ( , ,
+               _read {1,h,h,h} (OE,CK,REN,A,DO_1),
+               _write{h,h,h} (CK,WEN,A,DI_1));
+    )
+   
+    intern (DO_2) (
+      data_size = 1;
+      address_size = 8;
+      min_address = 0;
+      max_address = 255;
+      edge_trigger = rw;
+      read_write_conflict = XX;
+      read_read_conflict = r;
+      primitive = _cram ( , ,
+               _read {1,h,h,h} (OE,CK,REN,A,DO_2),
+               _write{h,h,h} (CK,WEN,A,DI_2));
+    )
+   
+    intern (DO_3) (
+      data_size = 1;
+      address_size = 8;
+      min_address = 0;
+      max_address = 255;
+      edge_trigger = rw;
+      read_write_conflict = XX;
+      read_read_conflict = r;
+      primitive = _cram ( , ,
+               _read {1,h,h,h} (OE,CK,REN,A,DO_3),
+               _write{h,h,h} (CK,WEN,A,DI_3));
+    )
+   
+    intern (DO_4) (
+      data_size = 1;
+      address_size = 8;
+      min_address = 0;
+      max_address = 255;
+      edge_trigger = rw;
+      read_write_conflict = XX;
+      read_read_conflict = r;
+      primitive = _cram ( , ,
+               _read {1,h,h,h} (OE,CK,REN,A,DO_4),
+               _write{h,h,h} (CK,WEN,A,DI_4));
+    )
+   
+    intern (DO_5) (
+      data_size = 1;
+      address_size = 8;
+      min_address = 0;
+      max_address = 255;
+      edge_trigger = rw;
+      read_write_conflict = XX;
+      read_read_conflict = r;
+      primitive = _cram ( , ,
+               _read {1,h,h,h} (OE,CK,REN,A,DO_5),
+               _write{h,h,h} (CK,WEN,A,DI_5));
+    )
+   
+    intern (DO_6) (
+      data_size = 1;
+      address_size = 8;
+      min_address = 0;
+      max_address = 255;
+      edge_trigger = rw;
+      read_write_conflict = XX;
+      read_read_conflict = r;
+      primitive = _cram ( , ,
+               _read {1,h,h,h} (OE,CK,REN,A,DO_6),
+               _write{h,h,h} (CK,WEN,A,DI_6));
+    )
+   
+    intern (DO_7) (
+      data_size = 1;
+      address_size = 8;
+      min_address = 0;
+      max_address = 255;
+      edge_trigger = rw;
+      read_write_conflict = XX;
+      read_read_conflict = r;
+      primitive = _cram ( , ,
+               _read {1,h,h,h} (OE,CK,REN,A,DO_7),
+               _write{h,h,h} (CK,WEN,A,DI_7));
+    )
+    output (DO) (
+      array = 7:0;
+      primitive = _buf(DO_0,DO<0>);
+      primitive = _buf(DO_1,DO<1>);
+      primitive = _buf(DO_2,DO<2>);
+      primitive = _buf(DO_3,DO<3>);
+      primitive = _buf(DO_4,DO<4>);
+      primitive = _buf(DO_5,DO<5>);
+      primitive = _buf(DO_6,DO<6>);
+      primitive = _buf(DO_7,DO<7>);
+    )
+)

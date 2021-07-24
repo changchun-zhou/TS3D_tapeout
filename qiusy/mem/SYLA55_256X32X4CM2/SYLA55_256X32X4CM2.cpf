@@ -1,0 +1,60 @@
+##/////////////////////////////////////////////////////////////////////////////////
+## ________________________________________________________________________________________________
+## 
+## 
+##             Synchronous RVT Periphery One-Port Register File Compiler
+## 
+##                 UMC 55nm Low K Low Power Logic Process
+## 
+## ________________________________________________________________________________________________
+## 
+##               
+##         Copyright (C) 2020 Faraday Technology Corporation. All Rights Reserved.       
+##                
+##         This source code is an unpublished work belongs to Faraday Technology Corporation       
+##         It is considered a trade secret and is not to be divulged or       
+##         used by parties who have not received written authorization from       
+##         Faraday Technology Corporation       
+##                
+##         Faraday's home page can be found at: http://www.faraday-tech.com/       
+##                
+## ________________________________________________________________________________________________
+## 
+##        IP Name            :  FSF0L_A_SY                                               
+##        IP Version         :  1.5.0                                                    
+##        IP Release Status  :  Active                                                   
+##        Word               :  256                                                      
+##        Bit                :  32                                                       
+##        Byte               :  4                                                        
+##        Mux                :  2                                                        
+##        Output Loading     :  0.01                                                     
+##        Clock Input Slew   :  0.008                                                    
+##        Data Input Slew    :  0.008                                                    
+##        Ring Type          :  Ring Shape Model                                         
+##        Ring Layer         :  2233                                                     
+##        Ring Width         :  2                                                        
+##        Bus Format         :  1                                                        
+##        Memaker Path       :  /workspace/technology/umc/55nm_201908/memlib_GDS/memlib  
+##        GUI Version        :  m20130120                                                
+##        Date               :  2020/07/14 14:49:06                                      
+## ________________________________________________________________________________________________
+## 
+##///////////////////////////////////////////////////////////////////////////////
+set_cpf_version 1.1      
+set_macro_model SYLA55_256X32X4CM2
+create_power_domain -name SYLA55_256X32X4CM2_VCCdomain \
+                    -boundary_ports {A DI DO WEB CSB CK DVS DVSE } \
+		    -default
+
+update_power_domain -name SYLA55_256X32X4CM2_VCCdomain -primary_power_net VCC \
+                    -primary_ground_net GND		    
+
+create_nominal_condition -name on  -voltage 1.2
+create_nominal_condition -name off -voltage 0
+
+create_power_mode -name ON_MODE  -domain_conditions {SYLA55_256X32X4CM2_VCCdomain@on} -default
+create_power_mode -name OFF_MODE -domain_conditions {SYLA55_256X32X4CM2_VCCdomain@off}
+
+end_macro_model
+
+

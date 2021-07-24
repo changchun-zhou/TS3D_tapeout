@@ -1,0 +1,107 @@
+///////////////////////////////////////////////////////////////////////////////////
+// ________________________________________________________________________________________________
+// 
+// 
+//             Synchronous RVT Periphery One-Port Register File Compiler
+// 
+//                 UMC 55nm Low K Low Power Logic Process
+// 
+// ________________________________________________________________________________________________
+// 
+//               
+//         Copyright (C) 2020 Faraday Technology Corporation. All Rights Reserved.       
+//                
+//         This source code is an unpublished work belongs to Faraday Technology Corporation       
+//         It is considered a trade secret and is not to be divulged or       
+//         used by parties who have not received written authorization from       
+//         Faraday Technology Corporation       
+//                
+//         Faraday's home page can be found at: http://www.faraday-tech.com/       
+//                
+// ________________________________________________________________________________________________
+// 
+//        IP Name            :  FSF0L_A_SY                                               
+//        IP Version         :  1.5.0                                                    
+//        IP Release Status  :  Active                                                   
+//        Word               :  256                                                      
+//        Bit                :  32                                                       
+//        Byte               :  4                                                        
+//        Mux                :  2                                                        
+//        Output Loading     :  0.01                                                     
+//        Clock Input Slew   :  0.008                                                    
+//        Data Input Slew    :  0.008                                                    
+//        Ring Type          :  Ring Shape Model                                         
+//        Ring Layer         :  2233                                                     
+//        Ring Width         :  2                                                        
+//        Bus Format         :  1                                                        
+//        Memaker Path       :  /workspace/technology/umc/55nm_201908/memlib_GDS/memlib  
+//        GUI Version        :  m20130120                                                
+//        Date               :  2020/07/14 14:48:57                                      
+// ________________________________________________________________________________________________
+// 
+///////////////////////////////////////////////////////////////////////////////////
+
+module SYLA55_256X32X4CM2 ( 
+                     A, DO, DI,
+                     DVS, DVSE,
+                     WEB, CK, CSB);
+                           
+   parameter  AddressSize     = 8;
+   parameter  Bits            = 32;
+   parameter  Words           = 256;
+   parameter  Bytes           = 4;
+   parameter  AddressRepSize  = 6;
+   parameter  DVSize          = 4; 
+ 
+   input  CK, CSB;
+   input [Bytes-1:0] WEB;
+   input [AddressSize-1:0] A;
+   input [DVSize-1:0] DVS;
+   input  DVSE;
+   input [Bytes*Bits-1:0] DI;
+   output [Bytes*Bits-1:0] DO;
+
+   reg [Bits-1:0] mem_0 [0:Words-1] ; 
+   reg [Bits-1:0] mem_1 [0:Words-1] ; 
+   reg [Bits-1:0] mem_2 [0:Words-1] ; 
+   reg [Bits-1:0] mem_3 [0:Words-1] ; 
+   reg [Bits-1:0] DO_0 ;   
+   reg [Bits-1:0] DO_1 ;   
+   reg [Bits-1:0] DO_2 ;   
+   reg [Bits-1:0] DO_3 ;   
+
+   wire [Bits-1:0] DI_0 = DI[1*Bits-1:0] ;   
+   wire [Bits-1:0] DI_1 = DI[2*Bits-1:1*Bits] ;   
+   wire [Bits-1:0] DI_2 = DI[3*Bits-1:2*Bits] ;   
+   wire [Bits-1:0] DI_3 = DI[4*Bits-1:3*Bits] ;   
+   wire [Bytes-1:0] WEB ;   
+   wire [Bytes*Bits-1:0] DO = { DO_3,DO_2,DO_1,DO_0 };     
+   wire write_en0;
+   wire write_en1;
+   wire write_en2;
+   wire write_en3;
+
+   and u10 (write_en0, !WEB[0], !CSB); 
+   and u11 (write_en1, !WEB[1], !CSB); 
+   and u12 (write_en2, !WEB[2], !CSB); 
+   and u13 (write_en3, !WEB[3], !CSB); 
+
+   always @ (posedge CK) 
+      if (write_en0) mem_0[A] = DI_0;      
+   always @ (posedge CK) 
+      if (write_en1) mem_1[A] = DI_1;      
+   always @ (posedge CK) 
+      if (write_en2) mem_2[A] = DI_2;      
+   always @ (posedge CK) 
+      if (write_en3) mem_3[A] = DI_3;      
+   always @ (posedge CK) 
+      if (!CSB) DO_0 = mem_0[A];      
+   always @ (posedge CK) 
+      if (!CSB) DO_1 = mem_1[A];      
+   always @ (posedge CK) 
+      if (!CSB) DO_2 = mem_2[A];      
+   always @ (posedge CK) 
+      if (!CSB) DO_3 = mem_3[A];      
+
+                             
+endmodule

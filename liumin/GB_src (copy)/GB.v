@@ -1,0 +1,350 @@
+module GB # (
+    parameter DATA_TYPE_WEIFLG = 1,
+    parameter DATA_TYPE_ACT    = 2,
+    parameter DATA_TYPE_ACTFLG = 3,
+    parameter ADDR_WIDTH       = 9,
+    parameter PORT_WIDTH       = 128,
+    parameter WEI_WR_WIDTH     = 128, // 16B
+    parameter FLGWEI_WR_WIDTH  = 64, // 8B
+    parameter ACT_WR_WIDTH     = 128, // 16B
+    parameter FLGACT_WR_WIDTH  = 32,  // 4B)
+    parameter MEMDEPTH         = 512,
+    parameter NUM_PEB          = 16,
+    parameter PE_NUM           = 27,
+    parameter WEIADDR_WR_WIDTH = 16,
+    parameter INSTR_WIDTH      = 8
+    )(
+    input clk,    // Clock
+    input rst_n,  // Asynchronous reset active low
+
+    //--------------------------------------------
+    input  CFGGB_val,
+    output reg GBCFG_rdy,
+
+    input [3  : 0]CFGGB_num_alloc_wei, CFGGB_num_alloc_flgwei, CFGGB_num_alloc_act, CFGGB_num_alloc_flgact,
+    input [3  : 0]CFGGB_num_total_flgwei, CFGGB_num_total_act, CFGGB_num_total_flgact,
+    input [11 : 0]CFGGB_num_loop_wei,
+    input [7  : 0]CFGGB_num_loop_act,
+
+    //--------------------------------------------
+    input CCUGB_pullback_wei, CCUGB_pullback_act,
+    input CCUGB_reset_all,
+
+    //--------------------------------------------
+    input  IFGB_cfg_rdy,
+    output reg  GBIF_cfg_val,
+    output reg [3 : 0]GBIF_cfg_info,
+
+    //--------------------------------------------
+    input  IFGB_wr_rdy,
+    output reg GBIF_wr_val,
+    output reg [PORT_WIDTH - 1 : 0]GBIF_wr_data,
+
+    output reg GBIF_rd_rdy,
+    input  IFGB_rd_val,
+    input  [PORT_WIDTH - 1 : 0]IFGB_rd_data,
+
+    //--------------------------------------------
+    output reg [NUM_PEB              -1 : 0] GBWEI_instr_rdy,
+    input [NUM_PEB              -1 : 0] WEIGB_instr_val,
+    input [INSTR_WIDTH*NUM_PEB  -1 : 0] WEIGB_instr_data,
+
+    //--------------------------------------------
+    input      [NUM_PEB         - 1 : 0]WEIGB_rdy,
+    output reg [NUM_PEB         - 1 : 0]GBWEI_val,
+    output     [WEI_WR_WIDTH    - 1 : 0]GBWEI_data,
+
+    input  [NUM_PEB - 1 : 0]FLGWEIGB_rdy,
+    output [NUM_PEB - 1 : 0]GBFLGWEI_val,
+    output [FLGWEI_WR_WIDTH - 1 : 0]GBFLGWEI_data,
+
+    input  ACTGB_rdy,
+    output GBACT_val,
+    output [ACT_WR_WIDTH    - 1 : 0]GBACT_data,
+
+    input  FLGACTGB_rdy,
+    output GBFLGACT_val,
+    output [FLGACT_WR_WIDTH - 1 : 0]GBFLGACT_data,
+
+    //--------------------------------------------
+    output                              IFPOOL_flg_rdy ,
+    input                               POOLIF_flg_val ,
+    input [PORT_WIDTH           -1 : 0] POOLIF_flg_data,
+
+    output                              IFPOOL_rdy ,
+    input                               POOLIF_val ,
+    input [PORT_WIDTH           -1 : 0] POOLIF_data,
+
+    //--------------------------------------------
+    input  CFGIF_rdy,
+    output IFCFG_val,
+    output [PORT_WIDTH           -1 : 0]IFCFG_data
+);
+
+
+wire IFSRAM_cfg_rdy, SRAMIF_cfg_val;
+wire [2 : 0]IFWR_Conf_DT;
+
+reg [3 : 0]GBIF_cfg_info_t;
+reg [3 : 0]IFWR_Conf_DT_t;
+assign IFSRAM_cfg_rdy = (GBIF_cfg_info_t == IFWR_Conf_DT_t) ? IFGB_cfg_rdy : 0;
+
+always @( * ) begin
+    if (GBIF_cfg_info_t == 0) begin
+        GBIF_cfg_info = {3'd0, 1'b1};
+    end else if (GBIF_cfg_info_t == 1) begin
+        GBIF_cfg_info = {3'd1, 1'b0};
+    end else if (GBIF_cfg_info_t == 2) begin
+        GBIF_cfg_info = {3'd2, 1'b0};
+    end else if (GBIF_cfg_info_t == 3) begin
+        GBIF_cfg_info = {3'd3, 1'b1};
+    end else if (GBIF_cfg_info_t == 4) begin
+        GBIF_cfg_info = {3'd4, 1'b1};
+    end else if (GBIF_cfg_info_t == 5) begin
+        GBIF_cfg_info = {3'd5, 1'b1};
+    end else if (GBIF_cfg_info_t == 6) begin
+        GBIF_cfg_info = {3'd6, 1'b1};
+    end else if (GBIF_cfg_info_t == 7) begin
+        GBIF_cfg_info = {3'd7, 1'b1};
+    end else begin
+        GBIF_cfg_info = 0;
+    end
+end
+
+reg CFGIF_cfg_val;
+always @(posedge clk or negedge rst_n) begin
+    if (~rst_n) begin
+        CFGIF_cfg_val  <= 0;
+    end else if (GBIF_cfg_info_t != 0) begin
+        CFGIF_cfg_val  <= CFGIF_rdy;
+    end else begin
+        CFGIF_cfg_val  <= 0;
+    end
+end
+reg POOLFLGIF_cfg_val;
+always @(posedge clk or negedge rst_n) begin
+    if (~rst_n) begin
+        POOLFLGIF_cfg_val  <= 0;
+    end else if (GBIF_cfg_info_t != 1) begin
+        POOLFLGIF_cfg_val  <= POOLIF_flg_val;
+    end else begin
+        POOLFLGIF_cfg_val  <= 0;
+    end
+end
+
+reg POOLIF_cfg_val;
+always @(posedge clk or negedge rst_n) begin
+    if (~rst_n) begin
+        POOLIF_cfg_val  <= 0;
+    end else if (GBIF_cfg_info_t != 2) begin
+        POOLIF_cfg_val  <= POOLIF_val;
+    end else begin
+        POOLIF_cfg_val  <= 0;
+    end
+end
+
+reg GBIF_cfg_val_d;
+always @(posedge clk or negedge rst_n) begin
+    if (~rst_n) begin
+        GBIF_cfg_val_d <= 0;
+    end else begin
+        GBIF_cfg_val_d <= GBIF_cfg_val;
+    end
+end
+
+reg [3 : 0]GBIF_cfg_info_t_d;
+always @(posedge clk or negedge rst_n) begin
+    if (~rst_n) begin
+        GBIF_cfg_info_t_d <= 4'b1000;
+    end else if (CCUGB_reset_all) begin
+        GBIF_cfg_info_t_d <= 4'b1000;
+    end else begin
+        GBIF_cfg_info_t_d <= GBIF_cfg_info_t;
+    end
+end
+
+reg [3 : 0]IFWR_Conf_DT_t_d;
+always @(posedge clk or negedge rst_n) begin
+    if (~rst_n) begin
+        IFWR_Conf_DT_t_d <= 4'b1000;
+    end else begin
+        IFWR_Conf_DT_t_d <= IFWR_Conf_DT_t;
+    end
+end
+
+always @( * ) begin
+    if ((GBIF_cfg_val & IFGB_cfg_rdy) == 1 && GBIF_cfg_info_t == IFWR_Conf_DT) begin
+        IFWR_Conf_DT_t = IFWR_Conf_DT;
+    end else begin
+        IFWR_Conf_DT_t = IFWR_Conf_DT_t_d;
+    end
+end
+
+reg [1 : 0]CFG_Latch_cnt;
+always @(posedge clk or negedge rst_n) begin
+    if (~rst_n) begin
+        CFG_Latch_cnt <= 0;
+    end else if (CFG_Latch_cnt != 0) begin
+        CFG_Latch_cnt <= CFG_Latch_cnt - 1;
+    end else if (GBCFG_rdy & CFGGB_val) begin
+        CFG_Latch_cnt <= 2;
+    end
+end
+
+
+always @( * ) begin
+    if (CCUGB_reset_all) begin
+        GBIF_cfg_val    = 0;
+        GBIF_cfg_info_t = 4'b1000;
+    end else if ((CFG_Latch_cnt == 0) && (GBCFG_rdy & CFGGB_val) == 0) begin
+        if (IFGB_cfg_rdy) begin
+            if (CFGIF_cfg_val) begin
+                GBIF_cfg_val    = CFGIF_cfg_val;
+                GBIF_cfg_info_t = 0;
+            end else if (POOLFLGIF_cfg_val) begin
+                GBIF_cfg_val    = POOLFLGIF_cfg_val;
+                GBIF_cfg_info_t = 1;
+            end else if (POOLIF_cfg_val) begin
+                GBIF_cfg_val    = POOLIF_cfg_val;
+                GBIF_cfg_info_t = 2;
+            end else if (SRAMIF_cfg_val) begin
+                GBIF_cfg_val    = SRAMIF_cfg_val;
+                GBIF_cfg_info_t = IFWR_Conf_DT;
+            end else begin
+                GBIF_cfg_val    = 0;
+                GBIF_cfg_info_t = 4'b1000;
+            end
+        end else begin
+            GBIF_cfg_val    = GBIF_cfg_val_d;
+            GBIF_cfg_info_t = GBIF_cfg_info_t_d;
+        end
+    end else begin
+        if (IFGB_cfg_rdy) begin
+            if (CFGIF_cfg_val) begin
+                GBIF_cfg_val    = 0;
+                GBIF_cfg_info_t = 4'b1000;
+            end else if (POOLFLGIF_cfg_val) begin
+                GBIF_cfg_val    = POOLFLGIF_cfg_val;
+                GBIF_cfg_info_t = 1;
+            end else if (POOLIF_cfg_val) begin
+                GBIF_cfg_val    = POOLIF_cfg_val;
+                GBIF_cfg_info_t = 2;
+            end else if (SRAMIF_cfg_val) begin
+                GBIF_cfg_val    = 0;
+                GBIF_cfg_info_t = 4'b1000;
+            end else begin
+                GBIF_cfg_val    = 0;
+                GBIF_cfg_info_t = 4'b1000;
+            end
+        end else begin
+            GBIF_cfg_val    = GBIF_cfg_val_d;
+            GBIF_cfg_info_t = GBIF_cfg_info_t_d;
+        end
+    end
+end
+
+//--------------------- read data out ---------------------
+always @( * ) begin
+    if (GBIF_cfg_info_t == 1) begin
+        GBIF_wr_val  = POOLIF_flg_val;
+        GBIF_wr_data = POOLIF_flg_data;
+    end else if (GBIF_cfg_info_t == 2) begin
+        GBIF_wr_val  = POOLIF_val;
+        GBIF_wr_data = POOLIF_data;
+    end else begin
+        GBIF_wr_val  = 0;
+        GBIF_wr_data = 0;
+    end
+end
+
+assign IFPOOL_flg_rdy = (GBIF_cfg_info_t == 1) ? IFGB_wr_rdy : 0;
+assign IFPOOL_rdy     = (GBIF_cfg_info_t == 2) ? IFGB_wr_rdy : 0;
+
+//--------------------- write data in ---------------------
+wire SRAMIF_wr_rdy, IFSRAM_wr_val;
+wire [PORT_WIDTH - 1 : 0]IFSRAM_wr_data;
+assign IFCFG_val      = (GBIF_cfg_info_t ==            0) ? IFGB_rd_val  : 0;
+assign IFSRAM_wr_val  = (GBIF_cfg_info_t == IFWR_Conf_DT_t) ? IFGB_rd_val  : 0;
+
+assign IFCFG_data     = (GBIF_cfg_info_t ==            0) ? IFGB_rd_data : 0;
+assign IFSRAM_wr_data = (GBIF_cfg_info_t == IFWR_Conf_DT_t) ? IFGB_rd_data : 0;
+
+always @( * ) begin
+    if (GBIF_cfg_info_t == 0) begin
+        GBIF_rd_rdy = CFGIF_rdy;
+    end else if (GBIF_cfg_info_t == IFWR_Conf_DT_t && GBIF_cfg_info_t != 8) begin
+        GBIF_rd_rdy = SRAMIF_wr_rdy;
+    end else begin
+        GBIF_rd_rdy = 0;
+    end
+end
+
+
+
+    SRAM_Block #(
+            .DATA_TYPE_WEIFLG(DATA_TYPE_WEIFLG),
+            .DATA_TYPE_ACT(DATA_TYPE_ACT),
+            .DATA_TYPE_ACTFLG(DATA_TYPE_ACTFLG),
+            .ADDR_WIDTH(ADDR_WIDTH),
+            .NUM_PEB(NUM_PEB),
+            .PE_NUM(PE_NUM),
+            .PORT_WIDTH(PORT_WIDTH),
+            .WEI_WR_WIDTH(WEI_WR_WIDTH),
+            .FLGWEI_WR_WIDTH(FLGWEI_WR_WIDTH),
+            .ACT_WR_WIDTH(ACT_WR_WIDTH),
+            .FLGACT_WR_WIDTH(FLGACT_WR_WIDTH)
+        ) inst_SRAM_Block (
+            .clk                   (clk),
+            .rst_n                 (rst_n),
+            .Layer_start           (CCUGB_reset_all),
+            .CFGGB_val             (CFGGB_val),
+            .GBCFG_rdy             (GBCFG_rdy),
+
+            .CFGGB_SRAM_num_wei    (CFGGB_num_alloc_wei),
+            .CFGGB_SRAM_num_flgwei (CFGGB_num_alloc_flgwei),
+            .CFGGB_SRAM_num_act    (CFGGB_num_alloc_act),
+            .CFGGB_SRAM_num_flgact (CFGGB_num_alloc_flgact),
+
+            .CFGGB_Data_num_flgwei (CFGGB_num_total_flgwei),
+            .CFGGB_Data_num_act    (CFGGB_num_total_act),
+            .CFGGB_Data_num_flgact (CFGGB_num_total_flgact),
+
+            .CFGGB_Cycl_num_wei    (CFGGB_num_loop_wei),
+            .CFGGB_Cycl_num_act    (CFGGB_num_loop_act),
+            .CCUGB_pullback_wei    (CCUGB_pullback_wei),
+            .CCUGB_pullback_act    (CCUGB_pullback_act),
+
+            .IFWR_Conf_rdy         (IFSRAM_cfg_rdy),
+            .IFWR_Conf_val         (SRAMIF_cfg_val),
+            .IFWR_Conf_DT          (IFWR_Conf_DT),
+
+            .IFWR_Data_rdy         (SRAMIF_wr_rdy),
+            .IFWR_Data_val         (IFSRAM_wr_val),
+            .IFWR_Data_data        (IFSRAM_wr_data),
+
+            .WEIPE_instr_rdy_all   (GBWEI_instr_rdy),
+            .PEWEI_instr_val_all   (WEIGB_instr_val),
+            .PEWEI_instr_data_all  (WEIGB_instr_data),
+
+            .PESRAM_rdy_Wei        (WEIGB_rdy),
+            .SRAMPE_val_Wei        (GBWEI_val),
+            .PESRAM_data_Wei     (GBWEI_data[132 : 5]),
+            .Which_PE_to_PE         (GBWEI_data[4 : 0]),
+
+            .PESRAM_rdy_WeiFlg     (FLGWEIGB_rdy),
+            .SRAMPE_val_WeiFlg     (GBFLGWEI_val),
+            .PESRAM_data_WeiFlg    (GBFLGWEI_data),
+
+            .PESRAM_rdy_Act        (ACTGB_rdy),
+            .SRAMPE_val_Act        (GBACT_val),
+            .PESRAM_data_Act       (GBACT_data),
+
+            .PESRAM_rdy_ActFlg     (FLGACTGB_rdy),
+            .SRAMPE_val_ActFlg     (GBFLGACT_val),
+            .PESRAM_data_ActFlg    (GBFLGACT_data)
+        );
+
+
+
+
+endmodule

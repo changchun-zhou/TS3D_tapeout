@@ -1,0 +1,101 @@
+///////////////////////////////////////////////////////////////////////////////////
+// ________________________________________________________________________________________________
+// 
+// 
+//             Synchronous RVT Periphery One-Port Register File Compiler
+// 
+//                 UMC 55nm Low K Low Power Logic Process
+// 
+// ________________________________________________________________________________________________
+// 
+//               
+//         Copyright (C) 2020 Faraday Technology Corporation. All Rights Reserved.       
+//                
+//         This source code is an unpublished work belongs to Faraday Technology Corporation       
+//         It is considered a trade secret and is not to be divulged or       
+//         used by parties who have not received written authorization from       
+//         Faraday Technology Corporation       
+//                
+//         Faraday's home page can be found at: http://www.faraday-tech.com/       
+//                
+// ________________________________________________________________________________________________
+// 
+//        IP Name            :  FSF0L_A_SY                                               
+//        IP Version         :  1.5.0                                                    
+//        IP Release Status  :  Active                                                   
+//        Word               :  64                                                       
+//        Bit                :  32                                                       
+//        Byte               :  4                                                        
+//        Mux                :  2                                                        
+//        Output Loading     :  0.01                                                     
+//        Clock Input Slew   :  0.008                                                    
+//        Data Input Slew    :  0.008                                                    
+//        Ring Type          :  Ring Shape Model                                         
+//        Ring Layer         :  2233                                                     
+//        Ring Width         :  2                                                        
+//        Bus Format         :  1                                                        
+//        Memaker Path       :  /workspace/technology/umc/55nm_201908/memlib_GDS/memlib  
+//        GUI Version        :  m20130120                                                
+//        Date               :  2020/07/14 14:56:12                                      
+// ________________________________________________________________________________________________
+// 
+///////////////////////////////////////////////////////////////////////////////////
+
+
+model SYLA55_64X32X4CM2 (
+    A, DI,
+    DO, WEB,
+    DVS, DVSE,
+    CK, CSB) (
+
+    bist_definition (    
+        data_out      DO (array=127:0;);
+        data_in       DI (array=127:0;);
+        address       A (array=5:0;);
+        dont_touch    DVS (array=3:0;);
+        dont_touch    DVSE;
+        write_enable  WEB (array=3:0;) low;
+
+        chip_enable   CSB low;
+
+        clock         CK high;
+        tech          = FSF0L_w;
+        vendor        = "Faraday Technology Corporation";
+        version       = "FSF0L_A_SY (ver 1.5.0)";
+        min_address   = 0;
+        max_address   = 63;
+        data_size     = 128;
+        top_column    = 2;
+        top_word      = 1;
+
+        descrambling_definition (
+            address (	
+                DSC_A0 = A<0>;
+                DSC_A1 = A<1>;
+                DSC_A2 = A<2>;
+                DSC_A3 = A<3>;
+                DSC_A4 = A<4>;
+                DSC_A5 = A<5>;
+            )
+        )
+        read_write_port(
+            read_cycle(
+                assert CSB;
+                change A;
+                wait;
+                assert CSB;
+                assert CK;		
+                wait;
+                assert CSB;
+                expect DO move;
+            )
+            write_cycle(
+                assert CSB;
+                change A;
+                change DI;
+                assert WEB;
+                wait;
+            )
+        )
+    )
+)

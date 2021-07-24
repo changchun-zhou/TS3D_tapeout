@@ -1,0 +1,45 @@
+# ///////////////////////////////////////////////////////////////////////////////////
+# // ________________________________________________________________________________________________
+# // 
+# // 
+# //             Synchronous RVT Periphery One-Port Register File Compiler
+# // 
+# //                 UMC 55nm Low K Low Power Logic Process
+# // 
+# // ________________________________________________________________________________________________
+# // 
+# //               
+# //         Copyright (C) 2020 Faraday Technology Corporation. All Rights Reserved.       
+# //                
+# //         This source code is an unpublished work belongs to Faraday Technology Corporation       
+# //         It is considered a trade secret and is not to be divulged or       
+# //         used by parties who have not received written authorization from       
+# //         Faraday Technology Corporation       
+# //                
+# //         Faraday's home page can be found at: http://www.faraday-tech.com/       
+# //                
+# // ________________________________________________________________________________________________
+# // 
+# //        IP Name            :  FSF0L_A_SY                                               
+# //        IP Version         :  1.5.0                                                    
+# //        IP Release Status  :  Active                                                   
+# //        Word               :  256                                                      
+# //        Bit                :  8                                                        
+# //        Byte               :  1                                                        
+# //        Mux                :  4                                                        
+# //        Output Loading     :  0.01                                                     
+# //        Clock Input Slew   :  0.008                                                    
+# //        Data Input Slew    :  0.008                                                    
+# //        Ring Type          :  Ring Shape Model                                         
+# //        Ring Layer         :  2233                                                     
+# //        Ring Width         :  2                                                        
+# //        Bus Format         :  1                                                        
+# //        Memaker Path       :  /workspace/technology/umc/55nm_201908/memlib_GDS/memlib  
+# //        GUI Version        :  m20130120                                                
+# //        Date               :  2020/07/14 14:53:58                                      
+# // ________________________________________________________________________________________________
+# // 
+# ///////////////////////////////////////////////////////////////////////////////////
+tfgDefineMem -module "SYLA55_256X8X1CM4" -array_name "Memory" -banks * -addr_range 255 0
+tfgDefineMemWrite -module "SYLA55_256X8X1CM4" -array_name "Memory" -clk "@(posedge CK)" -cond "~CSB && ~WEB" -addr "A" -data "DI"
+tfgDefineMemRead -module "SYLA55_256X8X1CM4" -array_name "Memory" -clk "@(posedge CK)" -cond "~CSB && WEB" -addr "A" -out "DO"

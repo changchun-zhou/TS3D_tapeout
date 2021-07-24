@@ -1,0 +1,251 @@
+/******************************************************************************
+________________________________________________________________________________________________
+
+
+            Synchronous RVT Periphery One-Port Register File Compiler
+
+                UMC 55nm Low K Low Power Logic Process
+
+________________________________________________________________________________________________
+
+              
+        Copyright (C) 2020 Faraday Technology Corporation. All Rights Reserved.       
+               
+        This source code is an unpublished work belongs to Faraday Technology Corporation       
+        It is considered a trade secret and is not to be divulged or       
+        used by parties who have not received written authorization from       
+        Faraday Technology Corporation       
+               
+        Faraday's home page can be found at: http://www.faraday-tech.com/       
+               
+________________________________________________________________________________________________
+
+       IP Name            :  FSF0L_A_SY                                               
+       IP Version         :  1.5.0                                                    
+       IP Release Status  :  Active                                                   
+       Word               :  256                                                      
+       Bit                :  32                                                       
+       Byte               :  4                                                        
+       Mux                :  2                                                        
+       Output Loading     :  0.01                                                     
+       Clock Input Slew   :  0.008                                                    
+       Data Input Slew    :  0.008                                                    
+       Ring Type          :  Ring Shape Model                                         
+       Ring Layer         :  2233                                                     
+       Ring Width         :  2                                                        
+       Bus Format         :  1                                                        
+       Memaker Path       :  /workspace/technology/umc/55nm_201908/memlib_GDS/memlib  
+       GUI Version        :  m20130120                                                
+       Date               :  2020/07/14 14:49:06                                      
+________________________________________________________________________________________________
+
+******************************************************************************/
+
+
+
+   Description:
+
+     The FSF0L_A_SY is a synchronous RVT periphery one-port register file compiler. It was created
+     according to UMC 55nm low k low power logic process design 
+     rules and can be incorporated with 55nm standard cells. Different 
+     combinations of words, bits, and aspect ratios can be used to generate the 
+     most desirable configurations.
+    
+     By requesting the desired size and timing constraints, the FSF0L_A_SY 
+     compiler is capable of providing suitable synchronous RAM layout instances
+     in seconds. It can automatically generate data sheets, Verilog / VHDL
+     behavioral simulation models, SCS or Viewlogic symbols, place & route models,
+     and test patterns for use in ASIC designs. The duty cycle length can be 
+     neglected as long as the setup / hold time and minimum high / low pulse
+     widths are satisfied.  This allows the flexibility of a clock falling edge
+     during each operation. Both word write and byte write operations are
+     supported. To conquer the possible process variations, sensing delay option 
+     signals are provided to extend the design margin after silicon with
+     performance compromised.
+
+
+
+   Features:
+
+       - Synchronous read and write operations
+       - Fully customized layout density 
+       - Available for 1.2V +/- 10% 
+       - Automatic power down to eliminate DC current
+       - Clocked address inputs and CSB to RAM at CK rising edge
+       - Clocked WEB input pin to RAM at CK rising edge
+       - Clocked DI input pins to RAM at CK rising edge
+       - Byte write or word write operations available
+       - Sensing delay tuning capability for design margin adjustment
+       - Verilog / VHDL timing / simulation model generator
+       - SPICE netlist generator
+       - GDSII layout database
+       - Memory compiler preview UI (Memaker)
+       - BIST code supported
+       - Column mux options for the best aspect ratio
+      
+
+
+   Input Pins and Capacitance:
+ 
+       Pin Name   Capacitance  Unit  Descriptions                                  
+       A[7:0]     0.006        pF    Address signals of width 8                    
+       CK         0.017        pF    Clock signal for addresses, WEB, CSB, and DI  
+       CSB        0.019        pF    Chip select, active low                       
+       DI[127:0]  0.003        pF    Input data of width 128                       
+       WEB[3:0]   0.049        pF    Write enable signals of 4 bytes, active low   
+       DVSE       0.011        pF    Delay option enable signal                    
+       DVS[3:0]   0.005        pF    Delay option control word, valid when DVSE=1  
+
+
+   Output Pins and Capacitance: 
+
+       Pin Name   Capacitance  Unit  Descriptions              
+       DO[127:0]  0.006        pF    Output data of width 128  
+
+
+   DVS Truth Table:
+
+              
+        ----------------------------------------------------------- 
+       | DVSE |  DVS[3:0]  | Valid | Remark                        |
+       |-----------------------------------------------------------|
+       |      |  0 0 0 0   |   V   |loosest margin                 |
+       |      -----------------------------------------------------|
+       |      |  0 0 0 1   |   V   |                               |
+       |      -----------------------------------------------------|
+       |      |  0 0 1 0   |   V   |                               |
+       |      -----------------------------------------------------|
+       |      |  0 0 1 1   |   V   |                               |
+       |      -----------------------------------------------------|
+       |      |  0 1 0 0   |   V   |                               |
+       |      -----------------------------------------------------|
+       |      |  0 1 0 1   |   V   |                               |
+       |      -----------------------------------------------------|
+       |      |  0 1 1 0   |   V   |                               |
+       |      -----------------------------------------------------|
+       |      |  0 1 1 1   |   V   |                               |
+       |      -----------------------------------------------------|
+       |   1  |  1 0 0 0   |   V   |                               |
+       |      -----------------------------------------------------|
+       |      |  1 0 0 1   |   V   |                               |
+       |      -----------------------------------------------------|
+       |      |  1 0 1 0   |   V   |                               |
+       |      -----------------------------------------------------|
+       |      |  1 0 1 1   |   V   |                               |
+       |      -----------------------------------------------------|
+       |      |  1 1 0 0   |   V   |                               |
+       |      -----------------------------------------------------|
+       |      |  1 1 0 1   |   V   |                               |
+       |      -----------------------------------------------------|
+       |      |  1 1 1 0   |   V   |                               |
+       |      -----------------------------------------------------|
+       |      |  1 1 1 1   |   V   |tightest margin                |
+       |-----------------------------------------------------------|
+       |   0  |  X X X X(*)|   V   |default setting (characterized)|
+        ----------------------------------------------------------- 
+       (*): XXXX means don't care, but needs to connect to logic 1 or 0.
+
+
+   Approximated Area Information: 
+
+       RAM area = 298.405 um (Width) x 99.240 um (Height) = 0.030 mm^2
+       Power ring width = 2 um
+
+
+   Process metal options:
+
+       
+       |------------------------------------------------------------|
+       |Metal usages of block layer |  M1, M2, M3, M4               |
+       |------------------------------------------------------------|
+       |Drawing metal layers        |  1xM1, 1xM2, 1xM3, 1xM4       |
+        ------------------------------------------------------------
+
+   Recommended operating conditions:
+
+       Symbol  FF1P32VM40C  TT1P2V25C  SS1P08V125C  FF1P32V125C  FF1P32V0C  SS1P08VM40C  TT1P2V125C  TT1P2V60C  TT1P2V85C  Units  
+       VCC     1.32         1.2        1.08         1.32         1.32       1.08         1.2         1.2        1.2        V      
+       TJ      -40          25         125          125          0          -40          125         60         85         C      
+
+       Notes:
+         1. VCC: Power supply for memory block
+         2. TJ : Junction operating temperature
+
+
+   Operating Conditions:
+
+       Corner       Process  Voltage(v)  Temperature(C)  
+       FF1P32VM40C  PFNF     1.32        -40             
+       TT1P2V25C    PTNT     1.2         25              
+       SS1P08V125C  PSNS     1.08        125             
+       FF1P32V125C  PFNF     1.32        125             
+       FF1P32V0C    PFNF     1.32        0               
+       SS1P08VM40C  PSNS     1.08        -40             
+       TT1P2V125C   PTNT     1.2         125             
+       TT1P2V60C    PTNT     1.2         60              
+       TT1P2V85C    PTNT     1.2         85              
+
+
+   Clock Slew Rate & Loading Look Up Table (3x5):
+       Index                    1      2      3      4      5
+       Clock Slew (ns)*     0.008  0.200  0.400
+       Output Loading(pF)   0.010  0.050  0.150  0.500  1.300
+
+   Clock & Data Slew Rate Look Up Table (3x3):
+       Index                    1      2      3
+       Data  Slew (ns)*     0.008  0.200  0.400
+       Clock Slew (ns)*     0.008  0.200  0.400
+
+       * For FF1P32VM40C: 30.0% ~ 70.0%
+       * For TT1P2V25C: 30.0% ~ 70.0%
+       * For SS1P08V125C: 30.0% ~ 70.0%
+       * For FF1P32V125C: 30.0% ~ 70.0%
+       * For FF1P32V0C: 30.0% ~ 70.0%
+       * For SS1P08VM40C: 30.0% ~ 70.0%
+       * For TT1P2V125C: 30.0% ~ 70.0%
+       * For TT1P2V60C: 30.0% ~ 70.0%
+       * For TT1P2V85C: 30.0% ~ 70.0%
+
+   Power Consumption:
+
+       Power Type       FF1P32VM40C  TT1P2V25C  SS1P08V125C  FF1P32V125C  FF1P32V0C  SS1P08VM40C  TT1P2V125C  TT1P2V60C  TT1P2V85C  Unit          
+       Standby Current  1.449        1.116      5.276        209.344      3.947      0.288        29.142      3.455      8.179      uA (CSB = 1)  
+       DC Current       1.449        1.116      5.276        209.344      3.947      0.288        29.142      3.455      8.179      uA (CSB = 0)  
+       Read Current     16.518       13.700     11.289       17.643       16.778     10.710       14.327      13.942     14.086     uA/MHz        
+       Write Current    18.310       15.363     13.471       19.973       18.341     12.719       16.154      15.596     15.728     uA/MHz        
+
+       Total current   = AC current * Freq + DC current   
+       Notes:
+        1. All cycles are active
+        2. All address bits switching
+        3. All data bits switching
+        4. Worst of read / write operation
+ 
+ 
+   Timing Information:
+
+       - CK input slope = 0.008 ns.
+       - Data input slope = 0.008 ns.
+       - All timing parameters are measured from 50% of input.
+       - Output reference voltage "H" = 50% of VDD, "L" = 50% of VDD.
+       - Output loading = 0.01 pF.
+       - Delay timing parameters in nano second.
+
+   symbol  FF1P32VM40C  TT1P2V25C  SS1P08V125C  FF1P32V125C  FF1P32V0C  SS1P08VM40C  TT1P2V125C  TT1P2V60C  TT1P2V85C  Descriptions                                  
+   taa     0.831        1.267      2.313        0.942        0.858      2.097        1.353       1.300      1.320      Data access time from CK rising               
+   toh     0.579        0.810      1.467        0.637        0.591      1.302        0.860       0.828      0.841      Output data hold time after CK rising         
+   trc     1.068        1.486      2.689        1.174        1.091      2.387        1.577       1.520      1.544      Read cycle time                               
+   tcss    0.156        0.231      0.418        0.183        0.162      0.363        0.252       0.238      0.244      CSB setup time before CK rising               
+   tcshr   0.044        0.063      0.097        0.057        0.049      0.081        0.071       0.066      0.068      CSB hold time after CK rising in read cycle   
+   tcshw   0.044        0.063      0.097        0.057        0.049      0.081        0.071       0.066      0.068      CSB hold time after CK rising in write cycle  
+   twh     0.094        0.130      0.204        0.110        0.097      0.178        0.142       0.135      0.137      WEB hold time after CK rising                 
+   tah     0.012        0.017      0.027        0.013        0.012      0.024        0.017       0.017      0.017      Address hold time after CK rising             
+   tas     0.071        0.123      0.255        0.086        0.073      0.241        0.133       0.125      0.129      Address setup time before CK rising           
+   twc     1.068        1.486      2.689        1.174        1.091      2.387        1.577       1.520      1.544      Write cycle time                              
+   tws     0.033        0.062      0.159        0.047        0.035      0.135        0.073       0.066      0.069      WEB setup time before CK rising               
+   tdh     0.077        0.106      0.165        0.086        0.079      0.153        0.111       0.107      0.110      Input data hold time after CK rising          
+   tds     0.047        0.085      0.213        0.056        0.048      0.185        0.095       0.089      0.091      Input data setup time before CK rising        
+   twdv    0.831        1.267      2.313        0.942        0.858      2.097        1.353       1.300      1.320      Output data valid after CK rising             
+   twdx    0.542        1.063      2.031        0.558        0.544      1.848        1.123       1.087      1.102      Output data invalid after CK rising           
+   thpw    0.135        0.197      0.360        0.150        0.138      0.323        0.211       0.201      0.205      Clock high pulse width                        
+   tlpw    0.135        0.197      0.360        0.150        0.138      0.323        0.211       0.201      0.205      Clock low pulse width                         
